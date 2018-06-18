@@ -98,8 +98,28 @@ int main() {
           * Both are in between [-1, 1].
           *
           */
+          Eigen::Map<Eigen::VectorXd> eigen_ptsx(ptsx.data(),ptsx.size());   
+          Eigen::Map<Eigen::VectorXd> eigen_ptsy(ptsy.data(),ptsy.size());   
+
+          Eigen::VectorXd state;
+          Eigen::VectorXd coeffs;
+
+          coeffs = polyfit(eigen_ptsx, eigen_ptsy, 2);
+          
+          double cte = py - polyeval(coeffs,px); 
+          double epsi = psi - atan(2 * coeffs[2] * px + coeffs[1]);
+          state << px, py, psi, v, cte, epsi;
+
+          
+          auto solution = mpc.Solve(state, coeffs);
+          cout << "aaaa" << endl;
+
           double steer_value;
           double throttle_value;
+          
+          //throttle_value = solution[0];
+          //steer_value = solution[1];
+
 
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
