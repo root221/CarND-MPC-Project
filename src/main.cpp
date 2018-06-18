@@ -101,7 +101,7 @@ int main() {
           Eigen::Map<Eigen::VectorXd> eigen_ptsx(ptsx.data(),ptsx.size());   
           Eigen::Map<Eigen::VectorXd> eigen_ptsy(ptsy.data(),ptsy.size());   
 
-          Eigen::VectorXd state;
+          Eigen::VectorXd state(6);
           Eigen::VectorXd coeffs;
 
           coeffs = polyfit(eigen_ptsx, eigen_ptsy, 2);
@@ -111,14 +111,13 @@ int main() {
           state << px, py, psi, v, cte, epsi;
 
           
-          auto solution = mpc.Solve(state, coeffs);
-          cout << "aaaa" << endl;
-
+          vector<double> solution = mpc.Solve(state, coeffs);
+          //cout << solution << endl;
           double steer_value;
           double throttle_value;
           
-          //throttle_value = solution[0];
-          //steer_value = solution[1];
+          throttle_value = solution[0];
+          steer_value = solution[1];
 
 
           json msgJson;
