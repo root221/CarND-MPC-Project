@@ -6,8 +6,8 @@
 using CppAD::AD;
 
 // TODO: Set the timestep length and duration
-size_t N = 25;
-double dt = 0.05;
+size_t N = 30;
+double dt = 0.005;
 
 // This value assumes the model presented in the classroom is used.
 //
@@ -46,17 +46,17 @@ class FG_eval {
     for(int t = 0; t < N; t++){
       fg[0] += CppAD::pow(vars[cte_start + t],2);
       fg[0] += CppAD::pow(vars[epsi_start + t],2);
+      fg[0] += CppAD::pow(vars[v_start + t] - 20, 2); // ??
     }
 
     for(int t = 0; t < N - 1; t++){
       fg[0] += CppAD::pow(vars[a_start + t], 2);
-      fg[0] += CppAD::pow(vars[delta_start + t], 2);
-      fg[0] += CppAD::pow(vars[v_start + t] - 40, 2); // ??
+      fg[0] += 10 * CppAD::pow(vars[delta_start + t], 2);
     }
 
     for(int t = 0; t < N - 2 ;t++){
       fg[0] += CppAD::pow(vars[a_start + t + 1] - vars[a_start + t], 2);
-      fg[0] += CppAD::pow(vars[delta_start + t + 1] - vars[delta_start + t], 2);
+      fg[0] += 50 * CppAD::pow(vars[delta_start + t + 1] - vars[delta_start + t], 2);
     }
 
     fg[x_start + 1] = vars[x_start];
@@ -85,10 +85,10 @@ class FG_eval {
 
       fg[x_start + t + 1] = x1 - (x0 + v0 * CppAD::cos(psi0) * dt);
       fg[y_start + t + 1] = y1 - (y0 + v0 * CppAD::sin(psi0) * dt);
-      fg[psi_start + t + 1] = psi1 - (psi0 + v0 * delta0 / Lf * dt);
+      fg[psi_start + t + 1] = psi1 - (psi0 - v0 * delta0 / Lf * dt);
       fg[v_start + t + 1] = v1 - (v0 + a0 * dt);
       fg[cte_start + t + 1] = cte1 - (cte0 + v0 * CppAD::sin(epsi0) * dt);
-      fg[epsi_start + t +1] = epsi1 - (epsi0 + v0 * delta0 / Lf * dt);
+      fg[epsi_start + t +1] = epsi1 - (epsi0 - v0 * delta0 / Lf * dt);
     }
 
 
@@ -111,7 +111,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   // element vector and there are 10 timesteps. The number of variables is:
   //
   // 4 * 10 + 2 * 9
-  size_t n_vars = 6 * N + 2 * (N-1);
+  size_t n_vars = 6 * N + 2 * (N - 1);
   // TODO: Set the number of constraints
   size_t n_constraints = N * 6;
 
@@ -119,7 +119,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   // SHOULD BE 0 besides initial state.
   Dvector vars(n_vars);
   for (int i = 0; i < n_vars; i++) {
-    vars[i] = 0;
+    vars[i] = 0.0;
   }
   vars[x_start] = state[0];
   vars[y_start] = state[1];
@@ -143,10 +143,10 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   }
 
   for(int i = delta_start; i < delta_start + N - 1 ; i++){ // ??
-    //vars_lowerbound[i] = - 0.436332;
-    //vars_lowerbound[i] = 0.436332;
-    vars_lowerbound[i] = -1;
-    vars_upperbound[i] = 1;
+    vars_lowerbound[i] = - 0.436332;
+    vars_upperbound[i] = 0.436332;
+    //vars_lowerbound[i] = -1;
+    //vars_upperbound[i] = 1;
   }
 
 

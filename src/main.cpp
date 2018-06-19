@@ -98,18 +98,30 @@ int main() {
           * Both are in between [-1, 1].
           *
           */
+          for(int i = 0; i < ptsx.size(); i++){
+            
+            double x_m = ptsx[i];
+            double y_m = ptsy[i];
+            
+            ptsx[i] = cos(psi) * (x_m - px) + sin(psi) * (y_m - py);
+            ptsy[i] = -sin(psi) * (x_m - px) + cos(psi) * (y_m - py);
+
+          }
+
+
           Eigen::Map<Eigen::VectorXd> eigen_ptsx(ptsx.data(),ptsx.size());   
           Eigen::Map<Eigen::VectorXd> eigen_ptsy(ptsy.data(),ptsy.size());   
 
           Eigen::VectorXd state(6);
           Eigen::VectorXd coeffs;
 
-          coeffs = polyfit(eigen_ptsx, eigen_ptsy, 2);
+          coeffs = polyfit(eigen_ptsx, eigen_ptsy, 3);
           
-          double cte = py - polyeval(coeffs,px); 
-          double epsi = psi - atan(2 * coeffs[2] * px + coeffs[1]);
-          state << px, py, psi, v, cte, epsi;
+          double cte = 0 - polyeval(coeffs,0); 
+          double epsi = 0 - atan(coeffs[1]);
+          state << 0, 0, 0, v, cte, epsi;
 
+          cout << state << endl;
           
           vector<double> solution = mpc.Solve(state, coeffs);
           //cout << solution << endl;
@@ -140,6 +152,8 @@ int main() {
           vector<double> next_x_vals;
           vector<double> next_y_vals;
 
+          next_x_vals = ptsx;
+          next_y_vals = ptsy;
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Yellow line
 
