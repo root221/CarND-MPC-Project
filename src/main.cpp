@@ -121,10 +121,9 @@ int main() {
           double epsi = 0 - atan(coeffs[1]);
           state << 0, 0, 0, v, cte, epsi;
 
-          cout << state << endl;
           
           vector<double> solution = mpc.Solve(state, coeffs);
-          //cout << solution << endl;
+          
           double steer_value;
           double throttle_value;
           
