@@ -1,0 +1,32 @@
+﻿<h3>The Model</h3>
+<p>My model includes six states and  two  and actuators，the six states are:</p>
+<ul>
+<li>x is the x coordinate of the vehicle</li>
+<li>y is the y coordinate of the vehicle</li>
+<li><img src="https://tex.s2cms.ru/svg/%5Cpsi" alt="\psi" /> is the yaw angle</li>
+<li>v is the velocity of the vehicle</li>
+<li>cte is the cross track error</li>
+<li>e<img src="https://tex.s2cms.ru/svg/%5Cpsi" alt="\psi" /> is the orientation Error</li>
+</ul>
+<p>the two actuators are:</p>
+<ul>
+<li>a  is the acceleration of the vehicle</li>
+<li>delta is the steering angle of the vehicle</li>
+</ul>
+<p>the update equations are:</p>
+<ul>
+<li><img align="center" src="https://tex.s2cms.ru/svg/x_%7Bt%2B1%7D%20%3D%20x_%7Bt%7D%20%2B%20v_%7Bt%7D*cos(%5Cpsi_t)*dt" alt="x_{t+1} = x_{t} + v_{t}*cos(\psi_t)*dt" /></li>
+<li><img align="center" src="https://tex.s2cms.ru/svg/y_%7Bt%2B1%7D%20%3D%20y_%7Bt%7D%20%2B%20v_%7Bt%7D*sin(%5Cpsi_t)*dt" alt="y_{t+1} = y_{t} + v_{t}*sin(\psi_t)*dt" /></li>
+<li><img align="center" src="https://tex.s2cms.ru/svg/%5Cpsi_%7Bt%2B1%7D%3D%5Cpsi_%7Bt%7D-%5Cfrac%7B%20v_t%7D%7BL%7D*%5Cdelta_t*dt" alt="\psi_{t+1}=\psi_{t}-\frac{ v_t}{L}*\delta_t*dt" /></li>
+<li><img align="center" src="https://tex.s2cms.ru/svg/v_%7Bt%2B1%7D%20%3Dv_t%20%2B%20a_t%20*%20dt" alt="v_{t+1} =v_t + a_t * dt" /></li>
+<li><img align="center" src="https://tex.s2cms.ru/svg/cte_%7Bt%2B1%7D%20%3Dcte_%7Bt%7D%20%2B%20v_%7Bt%7D*sin(e%5Cpsi_t)*dt" alt="cte_{t+1} =cte_{t} + v_{t}*sin(e\psi_t)*dt" /></li>
+<li><img align="center" src="https://tex.s2cms.ru/svg/e%5Cpsi_%7Bt%2B1%7D%3De%5Cpsi_%7Bt%7D%20-%20%5Cfrac%7Bv_t%7D%7BL%7D*%5Cdelta_t%20*%20dt" alt="e\psi_{t+1}=e\psi_{t} - \frac{v_t}{L}*\delta_t * dt" /></li>
+</ul>
+<p>the cost function is:</p>
+<p align="center" style="text-align: center;"><img align="center" src="https://tex.s2cms.ru/svg/%5Cleft(%5Csum_%7Bt%3D1%7D%5EN~1.1*%7Bcte_t%7D%5E2%20%2B%7Be%5Cpsi_t%7D%5E2%2B(v_t-20)%5E2%5Cright)%20%2B%5Cleft(%5Csum_%7Bt%3D1%7D%5E%7BN-1%7D%20a_t%5E2%20%2B%2010*%5Cdelta_t%5E2%20%5Cright)%2B%5Cleft(%5Csum_%7Bt%3D1%7D%5E%7BN-2%7D~(a_%7Bt%2B1%7D-a_%7Bt%7D)%5E2%2B%2010*(%5Cdelta_%7Bt%2B1%7D%20-%20%5Cdelta_%7Bt%7D)%5E2%5Cright)" alt="\left(\sum_{t=1}^N~1.1*{cte_t}^2 +{e\psi_t}^2+(v_t-20)^2\right) +\left(\sum_{t=1}^{N-1} a_t^2 + 10*\delta_t^2 \right)+\left(\sum_{t=1}^{N-2}~(a_{t+1}-a_{t})^2+ 10*(\delta_{t+1} - \delta_{t})^2\right)" /></p>
+<h3>Timestep Length and Elapsed Duration (N &amp; dt)</h3>
+<p>I first tried <img src="https://tex.s2cms.ru/svg/N%20%3D%2030" alt="N = 30" /> and <img src="https://tex.s2cms.ru/svg/dt%20%3D%200.005" alt="dt = 0.005" />, the vehicle could drive a lap around the track, but there were two places that the vehicle was very close to the curb, then I tried <img src="https://tex.s2cms.ru/svg/N%20%3D%2015" alt="N = 15" /> and <img src="https://tex.s2cms.ru/svg/dt%20%3D%200.05" alt="dt = 0.05" />, the vehicle could stay in the line all the time. With a close duration, I tried <img src="https://tex.s2cms.ru/svg/N%3D75" alt="N=75" />, <img src="https://tex.s2cms.ru/svg/dt%3D0.01" alt="dt=0.01" /> and <img src="https://tex.s2cms.ru/svg/N%3D8" alt="N=8" />, <img src="https://tex.s2cms.ru/svg/dt%20%3D%200.1" alt="dt = 0.1" />. The first one result was very bad, it couldn’t even finish a lap. The second one didn’t seem a lot different from <img src="https://tex.s2cms.ru/svg/N%20%3D%2015" alt="N = 15" /> and <img src="https://tex.s2cms.ru/svg/dt%20%3D%200.05" alt="dt = 0.05" />. Since the second one needed less computation than <img src="https://tex.s2cms.ru/svg/N%20%3D%2015" alt="N = 15" /> and <img src="https://tex.s2cms.ru/svg/dt%20%3D%200.05" alt="dt = 0.05" />, I chose <img src="https://tex.s2cms.ru/svg/N%20%3D%208" alt="N = 8" /> and <img src="https://tex.s2cms.ru/svg/dt%3D0.1" alt="dt=0.1" /> as my final result.</p>
+<h3>Polynomial Fitting and MPC Preprocessing</h3>
+<p>First, I transform the waypoints from the map’s coordinate system to the car’s coordinate system, then I use a cubic polynomial to fit  the waypoints. Next, I calculate the cross track error and orientation error at the point (0,0) with <img src="https://tex.s2cms.ru/svg/%5Cpsi%3D0" alt="\psi=0" /> which is the vehicle position in the car’s coordinate system, then I pass <img src="https://tex.s2cms.ru/svg/0%2C0%2C0%2Cv%2Ccte%2Cpsi" alt="0,0,0,v,cte,psi" /> as the state to MPC.</p>
+<h3>Model Predictive Control with Latency</h3>
+<p>I don’t implement MPC that handles a 100 millisecond latency.</p>
