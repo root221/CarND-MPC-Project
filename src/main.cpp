@@ -41,6 +41,8 @@ double polyeval(Eigen::VectorXd coeffs, double x) {
   return result;
 }
 
+
+
 // Fit a polynomial.
 // Adapted from
 // https://github.com/JuliaMath/Polynomials.jl/blob/master/src/Polynomials.jl#L676-L716
@@ -91,13 +93,18 @@ int main() {
           double py = j[1]["y"];
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
+          double delta = j[1]["steering_angle"];
+          double a = j[1]["throttle"];
 
-          /*
-          * TODO: Calculate steering angle and throttle using MPC.
-          *
-          * Both are in between [-1, 1].
-          *
-          */
+          // converting the velocity to m/s
+          v = v * 0.44704;
+          
+          double dt = 0.1;
+          px = px + v * cos(psi) * dt;
+          py = py + v * sin(psi) * dt;
+          psi = psi - v/2.67 * delta * dt;
+          v = v + a * dt;
+          
           for(int i = 0; i < ptsx.size(); i++){
             
             double x_m = ptsx[i];
@@ -128,8 +135,7 @@ int main() {
           double throttle_value;
           
           throttle_value = solution[0];
-          steer_value = solution[1];
-
+          steer_value = solution[1]/deg2rad(25);
 
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
